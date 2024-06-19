@@ -1,20 +1,41 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Dimensions } from 'react-native';
+import MapView from 'react-native-maps';
+import React, { useState, useEffect } from 'react';
+import { 
+  
+  requestForegroundPermissionsAsync ,
+  getCurrentPositionAsync,
+  LocationObject
+} from 'expo-location';
+
+import { styles } from './styles';
 
 export default function App() {
+  const [location, setLocation] = useState(null);
+
+  async function requestLocationPermissions(){
+    const { granted } = await requestForegroundPermissionsAsync();
+
+    if(granted){
+      const getCurrentPosition = await getCurrentPositionAsync();
+      setLocation(getCurrentPosition);
+    }
+  }
+  
+  useEffect(() => {
+    requestLocationPermissions();
+  }, []);
+
+  const windowHeight = Dimensions.get('window').height;
+  const halfScreenHeight = windowHeight / 2;
+
   return (
     <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
+
+      <MapView
+      style={styles.map}
+      />
+
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
